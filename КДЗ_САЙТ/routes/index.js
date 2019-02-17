@@ -35,40 +35,54 @@ async function get_complectation() {
     return arr_tasks.recordset;
 }
 
-router.get('/car/new', async function (req, res) {
-    var carlist = get_cars();
+router.get('/car/find', async function (req, res) {
+    var form = new multiparty.Form();
+    form.parse(req, async (err, fields, files) => {
+        if (!err) {
+            var transmission = fields.transmission[0];
+            var conditioner = fields.conditioner[0];
+            var clas = fields.clas[0];
+            var body = fields.body[0];
+            var seat = fields.seat[0];
 
-    res.render('carlist', {
-        carlist: carlist
+            var carlist = await get_cars(transmission, body, conditioner, seat, clas);
+
+            res.render('carlist', {
+                carlist: carlist
+            });
+        } else {
+            res.redirect('/');
+        }
     });
 })
 
-router.post('/car/new', async function (req, res) {
+async function get_cars(transmission, body, conditioner, seat, clas)
+{
     var sql_text = `declare @a as int
-declare @b as int
-declare @c as int
-declare @d as int
-declare @e as int
+    declare @b as int
+    declare @c as int
+    declare @d as int
+    declare @e as int
 
-set @a = (select top 1 EquimentId from Детали_комплектации where Description='Тип коробки' and Type = @коробка)
-set @b = (select top 1 EquimentId from Детали_комплектации where Description='Тип кузова' and Type = @кузов)
-set @c = (select top 1 EquimentId from Детали_комплектации where Description='Кондиционер' and Type = @кондиционер)
-set @d = (select top 1 EquimentId from Детали_комплектации where Description='Количество мест' and Type = @места)
-set @e = (select top 1 EquimentId from Детали_комплектации where Description='Класс автомобиля' and Type = @класс)
+    set @a = (select top 1 EquimentId from Детали_комплектации where Description='Тип коробки' and Type = @коробка)
+    set @b = (select top 1 EquimentId from Детали_комплектации where Description='Тип кузова' and Type = @кузов)
+    set @c = (select top 1 EquimentId from Детали_комплектации where Description='Кондиционер' and Type = @кондиционер)
+    set @d = (select top 1 EquimentId from Детали_комплектации where Description='Количество мест' and Type = @места)
+    set @e = (select top 1 EquimentId from Детали_комплектации where Description='Класс автомобиля' and Type = @класс)
 
-select pivo.ModelName as Name from
-(
-select ModelName, [Тип коробки], [Тип кузова], [Кондиционер], [Количество мест], [Класс автомобиля]
-from
-(select m.ModelName, d.Description, d.EquimentId
-from Комплектация k join Модели m on k.ModelId = m.ModelId
-					join Детали_комплектации d on d.EquimentId = k.EquimentId) bas
-pivot
-(
-	max(EquimentId)
-	for Description in ([Тип коробки], [Тип кузова], [Кондиционер], [Количество мест], [Класс автомобиля])
-) piv) as pivo
-where [Тип коробки]=@a and [Тип кузова]=@b and [Кондиционер]=@c and [Количество мест]=@d and [Класс автомобиля]=@e`;//последнюю строку доработать
+    select pivo.ModelName as Name from
+    (
+    select ModelName, [Тип коробки], [Тип кузова], [Кондиционер], [Количество мест], [Класс автомобиля]
+    from
+    (select m.ModelName, d.Description, d.EquimentId
+    from Комплектация k join Модели m on k.ModelId = m.ModelId
+					    join Детали_комплектации d on d.EquimentId = k.EquimentId) bas
+    pivot
+    (
+	    max(EquimentId)
+	    for Description in ([Тип коробки], [Тип кузова], [Кондиционер], [Количество мест], [Класс автомобиля])
+    ) piv) as pivo
+    where [Тип коробки]=@a and [Тип кузова]=@b and [Кондиционер]=@c and [Количество мест]=@d and [Класс автомобиля]=@e`;//последнюю строку доработать
 
     var connection = new sql.ConnectionPool({
         database: 'KDZ',
@@ -90,6 +104,6 @@ where [Тип коробки]=@a and [Тип кузова]=@b and [Кондиц�
         .query(sql_text);
 
     return arr_tasks.recordset;
-})
+}
 
 module.exports = router;
