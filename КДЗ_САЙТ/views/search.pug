@@ -1,29 +1,34 @@
-﻿h1 Выберите нужную комплектацию автомобиля
+﻿extemds laypout
+
+h1 Выберите нужную комплектацию автомобиля
     div
         a(href='/') На главную
-    table
-        thead
-            th Тип коробки
-            th Класс автомобиля
-            th Тип кузова
-            th Количество мест
-            th Кондиционер
-        tr
-            form(action='/car/find', method='get)
-                td select(name='transmission')
-                    each variable in variables.Where(Description=='Тип коробки')
-                    option(value=variable.EquipmentId) #{variable.Type}
-                td select(name='clas')
-                    each variable in variables.Where(Description=='Класс автомобиля')
-                    option(value=variable.EquipmentId) #{variable.Type}
-                td select(name='body')
-                    each varia le in variables.Where(Description=='Тип кузова')
-                    option(value=variable.EquipmentId) #{variable.Type}
-                td select(name='seat')
-                    each variable in variables.Where(Description=='Количество мест')
-                    option(value=variable.EquipmentId) #{variable.Type}
-                td select(name='conditioner')
-                    each variable in variables.Where(Description=='Кондиционер')
-                    option(value=variable.EquipmentId) #{variable.Type}
-                div
-                    button(type='submit' onclick='car_search') Поиск машин
+    div
+        form(action='/car/find' method="get" enctype='multipart/form-data')
+            div
+                label Тип коробки
+                select(name='transmission')
+                    each variable in variables.filter(t => t.Description=='Тип коробки')
+                        option(value=variable.EquipmentId) #{variable.Type}
+            div
+                label Класс автомобиля
+                select(name='clas')
+                    each variable in variables.filter(t => t.Description=='Класс автомобиля')
+                        option(value=variable.EquipmentId) #{variable.Type}
+            div
+                label Тип кузова
+                select(name='body')
+                    each variable in variables.filter(t => t.Description=='Тип кузова')
+                        option(value=variable.EquipmentId) #{variable.Type}
+            div
+                label Количество мест
+                select(name='seat')
+                    each variable in variables.filter(t => t.Description=='Количество мест')
+                        option(value=variable.EquipmentId) #{variable.Type}
+            div
+                label Кондиционер
+                select(name='conditioner')
+                    each variable in variables.filter(t => t.Description=='Кондиционер')
+                        option(value=variable.EquipmentId) #{variable.Type}
+            div
+                button(type='submit') Поиск машин

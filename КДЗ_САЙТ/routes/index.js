@@ -24,8 +24,7 @@ async function get_complectation() {
         database: 'KDZ',
         server: 'localhost\\SQLEXPRESS',
         driver: 'msnodesqlv8',
-        options: { trustedConnection:true }
-        
+        options: { trustedConnection:true }        
     });
 
     await connection.connect();
@@ -37,7 +36,11 @@ async function get_complectation() {
 }
 
 router.get('/car/new', async function (req, res) {
-    res.render('carlist');
+    var carlist = get_cars();
+
+    res.render('carlist', {
+        carlist: carlist
+    });
 })
 
 router.post('/car/new', async function (req, res) {
