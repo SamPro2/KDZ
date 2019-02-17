@@ -35,7 +35,7 @@ async function get_complectation() {
     return arr_tasks.recordset;
 }
 
-router.get('/car/find', async function (req, res) {
+router.post('/car/find', async function (req, res) {
     var form = new multiparty.Form();
     form.parse(req, async (err, fields, files) => {
         if (!err) {
