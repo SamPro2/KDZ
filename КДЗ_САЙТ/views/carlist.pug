@@ -1,0 +1,12 @@
+﻿extends layout
+
+block content
+	h1 Список автомобилей
+	div
+		a(href='/') На главную
+	table
+		thead
+			th Модель автомобилей
+		each car in carlist
+			tr
+				td #{car.Name}
