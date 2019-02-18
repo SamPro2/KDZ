@@ -9,15 +9,25 @@ router.get('/', function (req, res) {
     res.render('index');
 });
 
-router.get('/search', async function (req, res) {
+router.post('/search', async function (req, res) {
+    var form = new multiparty.Form();
+    form.parse(req, async (err, fields, files) => {
+        if (!err) {
+            var date1 = fields.date1[0];
+            var date2 = fields.date2[0];
+            
+            var allcars = await get_complectation(date1, date2);
 
-    var allcars = await get_complectation();
-
-    res.render('search', {
-        variables: allcars });
+            res.render('search', {
+                variables: allcars
+            });
+        } else {
+            res.redirect('/');
+        }
+    });
 });
 
-async function get_complectation() {
+async function get_complectation(date1, date2) {
     var sql_text = `select Description, EquimentId, Type from Детали_комплектации`;
 
     var connection = new sql.ConnectionPool({

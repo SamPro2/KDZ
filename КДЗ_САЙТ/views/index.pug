@@ -1,8 +1,16 @@
 ﻿extends layout
 
 block content
-  h1= 'Добро пожаловать!'
-  p Сайт проката автомобилей
-  div
-    a(href='/search') Найти автомобиль
-  img(src='/images/car.jpg' height=auto width=auto)
+    h1= 'Добро пожаловать!'
+    p Сайт проката автомобилей
+    div
+        form(action='/search' method="post" enctype='multipart/form-data')
+            div
+                label Начало
+                input(type='DateTime' name='date1')
+            div
+                label Конец
+                input(type='DateTime' name='date2')
+            div
+                button(type='submit') Найти тачку
+    img(src='/images/car.jpg' height=auto width=auto)
