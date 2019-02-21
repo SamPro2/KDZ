@@ -48,7 +48,7 @@ async function get_complectation(date1, date2) {
 Автомобили A join Заказ Z on A.CarId=Z.CarId join Модели M on M.ModelId=A.ModelId 
 where A.CarId not in 
 (Select CarId from Заказ 
-WHERE (@date1<=EndDateTime) and (@date2>=StartDateTime)) 
+WHERE (@date1<=EndDateTime) or (@date2>=StartDateTime)) 
 group by M.ModelId) as model left join Комплектация k on k.ModelId=model.model
 join Детали_комплектации dk
 on k.EquimentId = dk.EquimentId`;
