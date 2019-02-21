@@ -84,7 +84,7 @@ router.post('/car/find', async function (req, res) {
             var body = fields.body[0];
             var seat = fields.seat[0];
 
-            var carlist = await get_cars(transmission, body, conditioner, seat, clas);
+            var carlist = await get_cars(transmission, body, conditioner, seat, clas, data1, data2);
 
             res.render('carlist', {
                 carlist: carlist,
@@ -97,7 +97,7 @@ router.post('/car/find', async function (req, res) {
     });
 })
 
-async function get_cars(transmission, body, conditioner, seat, clas)
+async function get_cars(transmission, body, conditioner, seat, clas, date1, date2)
 {
     var sql_text = `declare @a as int
     declare @b as int
@@ -116,7 +116,14 @@ async function get_cars(transmission, body, conditioner, seat, clas)
     select ModelName, [Тип коробки], [Тип кузова], [Кондиционер], [Количество мест], [Класс автомобиля]
     from
     (select m.ModelName, d.Description, d.EquimentId
-    from Комплектация k join Модели m on k.ModelId = m.ModelId
+    from (select M.ModelId as model from 
+						Автомобили A join Заказ Z on A.CarId=Z.CarId join Модели M on M.ModelId=A.ModelId 
+						where A.CarId not in 
+						(Select CarId from Заказ 
+						WHERE (@date1<=EndDateTime) and (@date2>=StartDateTime)) 
+						group by M.ModelId) as model 
+						left join Модели m on m.ModelId = model.model
+						join Комплектация k on k.ModelId = m.ModelId
 					    join Детали_комплектации d on d.EquimentId = k.EquimentId) bas
     pivot
     (
@@ -142,6 +149,8 @@ async function get_cars(transmission, body, conditioner, seat, clas)
         .input("кондиционер", sql.NVarChar(100), conditioner)
         .input("места", sql.NVarChar(100), seat)
         .input("класс", sql.NVarChar(100), clas)
+        .input("date1", sql.Date, date1)
+        .input("date2", sql.Date, date2)
         .query(sql_text);
 
     return arr_tasks.recordset;
