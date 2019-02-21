@@ -116,11 +116,11 @@ async function get_cars(transmission, body, conditioner, seat, clas, date1, date
     select ModelName, [Тип коробки], [Тип кузова], [Кондиционер], [Количество мест], [Класс автомобиля]
     from
     (select m.ModelName, d.Description, d.EquimentId
-    from (select M.ModelId as model from 
+						from (select M.ModelId as model from 
 						Автомобили A join Заказ Z on A.CarId=Z.CarId join Модели M on M.ModelId=A.ModelId 
 						where A.CarId not in 
 						(Select CarId from Заказ 
-						WHERE (@date1<=EndDateTime) and (@date2>=StartDateTime)) 
+						WHERE (2019-02-01<=EndDateTime) or (2019-02-28>=StartDateTime)) 
 						group by M.ModelId) as model 
 						left join Модели m on m.ModelId = model.model
 						join Комплектация k on k.ModelId = m.ModelId
