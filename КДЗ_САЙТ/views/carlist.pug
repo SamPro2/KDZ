@@ -1,15 +1,15 @@
 ﻿extends layout
 
 block content
-    h1 Список автомобилей
-    div
-        a(href='/') На главную
-    div
-        a(href='/search?data1?data2') Вернуться к выбору деталей комплектации
-    img(src='/images/gg.jpg' height=auto width=auto)
-    table
-        thead
-            th Модель автомобилей
-            each car in carlist
-                tr
-                    td #{car.Name}
+	h1 Список автомобилей
+	div
+		a(href='/') На главную
+	div
+		a(href='/search?data1?data2') Вернуться к выбору деталей комплектации    
+	table
+		thead
+			th Модель автомобилей
+			each car in carlist
+				tr
+					td #{car.Name}
+	img(src='/images/gg.jpg' height=auto width=auto)
