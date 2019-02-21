@@ -43,7 +43,15 @@ router.get('/search', async function (req, res) {
 })
 
 async function get_complectation(date1, date2) {
-    var sql_text = `select Description, EquimentId, Type from Детали_комплектации`;
+    var sql_text = `select distinct dk.Description as Description, dk.EquimentId as Equipment, dk.Type as Type from
+(select M.ModelId as model from 
+Автомобили A join Заказ Z on A.CarId=Z.CarId join Модели M on M.ModelId=A.ModelId 
+where A.CarId not in 
+(Select CarId from Заказ 
+WHERE (@date1<=EndDateTime) and (@date2>=StartDateTime)) 
+group by M.ModelId) as model left join Комплектация k on k.ModelId=model.model
+join Детали_комплектации dk
+on k.EquimentId = dk.EquimentId`;
 
     var connection = new sql.ConnectionPool({
         database: 'KDZ',
@@ -55,7 +63,10 @@ async function get_complectation(date1, date2) {
     await connection.connect();
 
     var q_req = new sql.Request(connection);
-    var arr_tasks = await q_req.query(sql_text);
+    var arr_tasks = await q_req
+        .input("date1", sql.Date, date1)
+        .input("date2", sql.Date, date2)
+        .query(sql_text);
 
     return arr_tasks.recordset;
 }
@@ -112,7 +123,7 @@ async function get_cars(transmission, body, conditioner, seat, clas)
 	    max(EquimentId)
 	    for Description in ([Тип коробки], [Тип кузова], [Кондиционер], [Количество мест], [Класс автомобиля])
     ) piv) as pivo
-    where [Тип коробки]=@a and [Тип кузова]=@b and [Кондиционер]=@c and [Количество мест]=@d and [Класс автомобиля]=@e`;//последнюю строку доработать
+    where [Тип коробки]=@a and [Тип кузова]=@b and [Кондиционер]=@c and [Количество мест]=@d and [Класс автомобиля]=@e`;
 
     var connection = new sql.ConnectionPool({
         database: 'KDZ',
