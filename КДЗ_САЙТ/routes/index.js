@@ -43,12 +43,15 @@ router.get('/search', async function (req, res) {
 })
 
 async function get_complectation(date1, date2) {
-    var sql_text = `select distinct dk.Description as Description, dk.EquimentId as Equipment, dk.Type as Type from
+    var sql_text = `declare @x date, @y date
+set @x = @date1
+set @y= @date2
+select distinct dk.Description as Description, dk.EquimentId as Equipment, dk.Type as Type from
 (select M.ModelId as model from 
 Автомобили A join Заказ Z on A.CarId=Z.CarId join Модели M on M.ModelId=A.ModelId 
 where A.CarId not in 
 (Select CarId from Заказ 
-WHERE (@date1<=EndDateTime) or (@date2>=StartDateTime)) 
+WHERE (@x<=EndDateTime) and (@y>=StartDateTime)) 
 group by M.ModelId) as model left join Комплектация k on k.ModelId=model.model
 join Детали_комплектации dk
 on k.EquimentId = dk.EquimentId`;
@@ -99,7 +102,10 @@ router.post('/car/find', async function (req, res) {
 
 async function get_cars(transmission, body, conditioner, seat, clas, date1, date2)
 {
-    var sql_text = `declare @a as int
+    var sql_text = `declare @x date, @y date
+set @x = @date1
+set @y= @date2
+declare @a as int
     declare @b as int
     declare @c as int
     declare @d as int
@@ -120,7 +126,7 @@ async function get_cars(transmission, body, conditioner, seat, clas, date1, date
 						Автомобили A join Заказ Z on A.CarId=Z.CarId join Модели M on M.ModelId=A.ModelId 
 						where A.CarId not in 
 						(Select CarId from Заказ 
-						WHERE (2019-02-01<=EndDateTime) or (2019-02-28>=StartDateTime)) 
+						WHERE (@x<=EndDateTime) and  (@y>=StartDateTime)) 
 						group by M.ModelId) as model 
 						left join Модели m on m.ModelId = model.model
 						join Комплектация k on k.ModelId = m.ModelId
